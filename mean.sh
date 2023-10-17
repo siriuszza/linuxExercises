@@ -13,15 +13,14 @@ else
 	file=$2
 fi
 
-data=$(tail -n +2 $file | cut -d ',' -f $column)
-
-sum=0
-line_count=0
-
-while read sample; do
-	((sum+=sample))
-	((line_count+=1))
-done <<< "$data"
-
-mean=$(bc <<< "scale=4; $sum / $line_count")
-echo $mean
+cat $file |
+	tail -n +2 | 
+	cut -d ',' -f $column | {
+	sum=0;
+	line_count=0;
+	while read sample; do
+		((sum+=sample));
+		((line_count++));
+	done;
+	echo $(bc <<< "scale=4; $sum / $line_count");
+}
